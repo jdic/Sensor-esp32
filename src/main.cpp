@@ -28,6 +28,13 @@ void handleSpeed(int speed)
   mappedSpeed = map(speed, 0, 100, 0, 255);
 }
 
+float handleSensor(int PIN)
+{
+  float value = analogRead(PIN);
+
+  return value;
+}
+
 void handleEngineHTTP()
 {
   server.on("/engine/on", HTTP_POST, [](AsyncWebServerRequest *request)
@@ -60,7 +67,14 @@ void handleEngineHTTP()
 
 void handleSensorHTTP()
 {
-  
+  server.on("/sensor", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    int PIN = request->getParam("pin")->value().toInt();
+    Serial.print(F("[SENSOR] [READ] "));
+    Serial.println(PIN);
+
+    request->send(200, "text/plain", String(handleSensor(PIN)));
+  });
 }
 
 void initWiFi()
