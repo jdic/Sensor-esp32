@@ -8,8 +8,8 @@
 
 AsyncWebServer server(80);
 
-const char* ssid = "HUAWEI-0617AJ";
-const char* password = "rgdrcVwrBcLf9tuMpF";
+const char* ssid = "ESP32";
+const char* password = "unodostres";
 
 bool isActiveEngine = false;
 bool isConnected = false;
