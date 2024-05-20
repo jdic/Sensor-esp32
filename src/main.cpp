@@ -2,9 +2,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-#define ENA 15
-#define IN1 5
-#define IN2 4
+#define ENG 16
 
 AsyncWebServer server(80);
 
@@ -13,7 +11,6 @@ const char* password = "unodostres";
 
 bool isActiveEngine = false;
 bool isConnected = false;
-int mappedSpeed = 0;
 
 void blink(int speed)
 {
@@ -21,11 +18,6 @@ void blink(int speed)
   delay(speed);
   digitalWrite(LED_BUILTIN, LOW);
   delay(speed);
-}
-
-void handleSpeed(int speed)
-{
-  mappedSpeed = map(speed, 0, 100, 0, 255);
 }
 
 float handleSensor(int PIN)
@@ -40,27 +32,14 @@ void handleEngineHTTP()
   server.on("/engine/on", HTTP_POST, [](AsyncWebServerRequest *request)
   {
     Serial.println(F("[ENGINE] [ON]"));
-    isActiveEngine = true;
+    digitalWrite(ENG, LOW);
     request->send(200);
   });
 
   server.on("/engine/off", HTTP_POST, [](AsyncWebServerRequest *request)
   {
     Serial.println(F("[ENGINE] [OFF]"));
-    isActiveEngine = false;
-    request->send(200);
-  });
-
-  server.on("/engine/speed", HTTP_POST, [](AsyncWebServerRequest *request)
-  {
-    if (request->hasParam("speed", true))
-    {
-      int speed = request->getParam("speed", true)->value().toInt();
-      Serial.print(F("[ENGINE] [SPEED] "));
-      Serial.println(speed);
-      handleSpeed(speed);
-    }
-
+    digitalWrite(ENG, LOW);
     request->send(200);
   });
 }
@@ -115,9 +94,7 @@ void setup()
   Serial.println(F("Sensor Reader"));
   Serial.println();
 
-  pinMode(ENA, OUTPUT);
-  pinMode(IN1, OUTPUT);
-  pinMode(IN2, OUTPUT);
+  pinMode(ENG, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
   initWiFi();
